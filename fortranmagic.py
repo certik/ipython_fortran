@@ -47,12 +47,18 @@ class FortranMagics(Magics):
         try:
             #print("work dir: %s" % path)
             filename = os.path.join(path, "a.f90")
-            source = "implicit none\n" + cell + "\nend"
+            if cell.startswith("program") or cell.startswith("module"):
+                # The whole program is supplied, don't touch it:
+                source = cell
+            else:
+                # Fortran lines are supplied directly, make it a valid
+                # Fortran code:
+                source = "implicit none\n" + cell + "\nend"
             with open(filename, "w") as f:
                 f.write(source)
 
             # Compile
-            out, err, code = get_output_error_code('cd %s; gfortran a.f90' % \
+            out, err, code = get_output_error_code('cd %s; gfortran -Wall -Wextra -Wimplicit-interface -fPIC -g -fcheck=all -fbacktrace a.f90' % \
                     path)
             if out != "":
                 print("out:")
