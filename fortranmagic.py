@@ -54,6 +54,31 @@ class FortranMagics(Magics):
                 # Fortran lines are supplied directly, make it a valid
                 # Fortran code:
                 source = "implicit none\n" + cell + "\nend"
+            implicit_modules = """\
+module types
+implicit none
+private
+public dp
+integer, parameter :: dp=kind(0.d0)          ! double precision
+end module
+
+module constants
+use types, only: dp
+implicit none
+private
+public pi, e_, i_
+
+! Constants contain more digits than double precision, so that
+! they are rounded correctly. Single letter constants contain underscore so
+! that they do not clash with user variables ("e" and "i" are frequently used as
+! loop variables)
+real(dp), parameter :: pi    = 3.1415926535897932384626433832795_dp
+real(dp), parameter :: e_    = 2.7182818284590452353602874713527_dp
+complex(dp), parameter :: i_ = (0, 1)
+end module
+"""
+            source = implicit_modules + source
+
             with open(filename, "w") as f:
                 f.write(source)
 
