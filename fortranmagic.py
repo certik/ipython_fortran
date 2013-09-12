@@ -106,7 +106,8 @@ end module
                 print("err:")
                 print(err)
             if code != 0:
-                raise Exception("Failed to compile")
+                print("*** FAILED TO COMPILE ***")
+                return
 
             # Run
             out, err, code = get_output_error_code('cd %s; ./a.out' % path)
