@@ -53,7 +53,22 @@ class FortranMagics(Magics):
             else:
                 # Fortran lines are supplied directly, make it a valid
                 # Fortran code:
-                source = "implicit none\n" + cell + "\nend"
+                if cell.startswith("use"):
+                    # put "implicit none" below all "use" lines:
+                    source = []
+                    c = cell.split("\n")
+                    line = c[0]; del c[0]
+                    while line.startswith("use"):
+                        source.append(line)
+                        line = c[0]; del c[0]
+                    source.append("implicit none")
+                    source.append(line)
+                    source.extend(c)
+                    source = "\n".join(source) + "\nend"
+                    print(source)
+                else:
+                    source = "implicit none\n" + cell + "\nend"
+
             implicit_modules = """\
 module types
 implicit none
