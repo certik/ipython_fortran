@@ -65,7 +65,6 @@ class FortranMagics(Magics):
                     source.append(line)
                     source.extend(c)
                     source = "\n".join(source) + "\nend"
-                    print(source)
                 else:
                     source = "implicit none\n" + cell + "\nend"
 
